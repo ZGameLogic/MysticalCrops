@@ -1,13 +1,12 @@
 -- ***************************************************
 -- * 					Crops						 *
 -- * 												 *
--- * This program takes a chest input of seed item   *
+-- * This program takes a barrel input of seed item  *
 -- * pairs and automatically grows the item if the   *
 -- * count of the item is less than the set value.   *
 -- * 												 *
 -- * 				By Ben Shabowski				 *
 -- ***************************************************
-
 
 require("../lib/PrintingLib")
 require("../lib/ItemLib")
@@ -16,10 +15,10 @@ local strings = require("cc.strings")
 
 local screen = peripheral.wrap("monitor_0")
 local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
-local seedInput = peripheral.wrap("functionalstoreage:oak_1_0")
+local seedOutput = peripheral.wrap("functionalstoreage:oak_1_0")
 local network = peripheral.wrap("meBridge_1")
 
-local data = "../data/data.json"
+local data = "/data/data.txt"
 
 -- <item name>=<count to stop planting>
 local items = {}
@@ -52,4 +51,5 @@ function listenTime()
     end
 end
 
+items = loadDataFile(data)
 parallel.waitForAll(listenTouch, listenTime)

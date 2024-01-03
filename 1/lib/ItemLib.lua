@@ -1,8 +1,17 @@
+--- gets the length of items table
+-- @param items Items table
+-- @returns length of table
+local function getItemsLength(items)
+    count = 0
+    for _ in pairs(items) do count = count + 1 end
+    return count
+end
+
 --- tests if we need to update items table with new barrel configuration
 -- @param barrel Barrel paripheral
 -- @param items Items map
 function isNeedBarrelUpdate(barrel, items)
-    return #barrel.list() ~= #items
+    return #barrel.list()/2 ~= getItemsLength(items)
 end
 
 --- updates data file and items table with barrel items
@@ -51,8 +60,12 @@ end
 -- @returns item table from saved file
 function loadDataFile(dataFile)
     file = io.open(dataFile, "r")
-    io.input(file)
-    return textutils.unserialize(io.read("a"))
+    io.input(dataFile)
+    stream = io.read("a")
+    if stream then
+        return textutils.unserialize(stream)
+    end
+    return {}
 end
 
 --- Gets the item count of an item from a AE system
