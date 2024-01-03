@@ -7,6 +7,19 @@ local function getItemsLength(items)
     return count
 end
 
+--- Gets the item count of an item from a AE system
+-- @param network AE Network peripheral
+-- @param name Item name to look for
+-- @returns item count, or 0 if the item is nil
+local function getAEItemCount(network, name)
+    local item = {name = name}
+    local networkItem = network.getItem(item)
+    if(networkItem) then
+    	return networkItem.amount
+    end
+    return 0
+end
+
 --- tests if we need to update items table with new barrel configuration
 -- @param barrel Barrel paripheral
 -- @param items Items map
@@ -68,24 +81,27 @@ function loadDataFile(dataFile)
     return {}
 end
 
---- Gets the item count of an item from a AE system
+--- Gets a list of items that need to be grown
 -- @param network AE Network peripheral
--- @param name Item name to look for
--- @returns item count, or 0 if the item is nil
-function getAEItemCount(network, name)
-    local item = {name = name}
-    local networkItem = network.getItem(item)
-    if(networkItem) then
-    	return networkItem.amount
+-- @param barrel Barrel peripheral
+-- @param items Table of items
+-- @returns Table of item names as keys and seed type as values
+function getGrowList(network, barrel, items)
+    growList = {}
+    for index,value in pairs(items) do
+        aeCount = getAEItemCount(network, index)
+        if aeCount < value then
+        	growList[index] = getItemSeed(barrel, index)
+        end
     end
-    return 0
+    return growList
 end
 
 return {
     isNeedBarrelUpdate,
     updateFromBarrel,
-    getAEItemCount,
     getItemSeed,
     updateDataFile,
-    loadDataFile
+    loadDataFile,
+    getGrowList
 }
