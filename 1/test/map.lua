@@ -8,6 +8,7 @@ local network = peripheral.wrap("meBridge_1")
 local items = {}
 
 print(getItemSeed(barrel, "minecraft:iron_ingotd"))
+print("another test")
 
 --for index,item in pairs(barrel.list()) do
 --    print(barrel.list()[index])
