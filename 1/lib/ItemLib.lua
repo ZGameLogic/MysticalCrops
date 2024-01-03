@@ -6,11 +6,21 @@ function isNeedBarrelUpdate(barrel, items)
 end
 
 --- updates data file and items table with barrel items
+-- @param barrel Barrel paripheral
+-- @param dataFile
+-- @returns updated item table
 function updateFromBarrel(barrel, dataFile, items)
-    for i=1,#barrel.list(),2 do
-    	print("Item: " .. barrel.list()[i+1].name)
+    local updated = {}
+    for i=2,#barrel.list(),2 do
+        local currentItem = barrel.list()[i].name
+        if items[currentItem] then
+        	updated[currentItem] = items[currentItem]
+        else
+            updated[currentItem] = 1000
+        end
     end
-    updateDataFile(dataFile, items)
+    updateDataFile(dataFile, updated)
+    return updated
 end
 
 --- gets the seed for a specific item
@@ -26,12 +36,23 @@ function getItemSeed(barrel, name)
     return nil
 end
 
+--- Updates the saved data file with the items table
+-- @param dataFile File path to the data
+-- @param items Items table to save to the file
 function updateDataFile(dataFile, items)
-
+    file = io.open(dataFile, "w")
+    io.output(file)
+    io.write(textutils.serialise(items))
+    io.flush()
 end
 
-function loadDataFile(dataFile, items)
-
+--- Loads saved data into a table
+-- @param dataFile File path to the data
+-- @returns item table from saved file
+function loadDataFile(dataFile)
+    file = io.open(dataFile, "r")
+    io.input(file)
+    return textutils.unserialize(io.read("a"))
 end
 
 --- Gets the item count of an item from a AE system
@@ -51,5 +72,7 @@ return {
     isNeedBarrelUpdate,
     updateFromBarrel,
     getAEItemCount,
-    getItemSeed
+    getItemSeed,
+    updateDataFile,
+    loadDataFile
 }

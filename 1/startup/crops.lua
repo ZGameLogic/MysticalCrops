@@ -10,6 +10,8 @@
 
 
 require("../lib/PrintingLib")
+require("../lib/ItemLib")
+
 local strings = require("cc.strings")
 
 local screen = peripheral.wrap("monitor_0")
@@ -17,11 +19,9 @@ local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
 local seedInput = peripheral.wrap("functionalstoreage:oak_1_0")
 local network = peripheral.wrap("meBridge_1")
 
-local data = "../data/data.txt"
+local data = "../data/data.json"
 
---[[
-    <item name>=<count to stop planting>
-]]--
+-- <item name>=<count to stop planting>
 local items = {}
 
 -- Handle the touch events
@@ -31,16 +31,8 @@ end
 
 -- Handle updating the list of data from the barrel
 function updateBarrelItems()
-
-
-end
-
--- Gets an item from the ME system
-function getItem(itemName)
-    for index,item in pairs(network.listItems()) do
-        if item.name == itemName then
-            return item
-        end
+    if isNeedBarrelUpdate(barrel, items) then
+    	items = updateFromBarrel(barrel, data, items)
     end
 end
 
