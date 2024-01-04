@@ -30,6 +30,7 @@ end
 function resetScreen()
     screen.setTextScale(1)
     screen.setTextColor(0x1)
+    screen.setBackgroundColor(0x8000)
     for i=1,76 do
         screen.setCursorPos(1, i)
         screen.write("                                                                                                                     ")
