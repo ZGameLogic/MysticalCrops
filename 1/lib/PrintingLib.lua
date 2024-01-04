@@ -11,11 +11,11 @@ local PAGE_ITEM_COUNT = 20
 -- @returns Formatted number
 local function formatNumber(number)
     if(number > 1000000000000) then
-        return string.format("%.1fT", number/1000000000000)
+        return string.format("%.2fT", number/1000000000000)
     elseif(number > 1000000000) then
-        return string.format("%.1fB", number/1000000000)
+        return string.format("%.2fB", number/1000000000)
     elseif(number > 1000000) then
-        return string.format("%.1fM", number/1000000)
+        return string.format("%.2fM", number/1000000)
     else
         return string.format("%d", number)
     end
@@ -41,7 +41,7 @@ local function writeItemLine(item, color)
     screen.write(" |")
 end
 
---- Completly clears the screen
+--- Completely clears the screen
 -- @param screen Screen peripheral
 function resetScreen()
     screen.setTextScale(1)

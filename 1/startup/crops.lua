@@ -22,6 +22,7 @@ local data = "/data/data.txt"
 
 -- <item name>={count:4, displayName: iron}
 local items = {}
+local growList = {}
 
 -- Handle the touch events
 function handleTouch(x, y)

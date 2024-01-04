@@ -1,6 +1,6 @@
 --- gets the length of items table
--- @param items Items table
--- @returns length of table
+--- @param items table Items table
+--- @return number length of table
 local function getItemsLength(items)
     local count = 0
     for _ in pairs(items) do count = count + 1 end
@@ -8,9 +8,9 @@ local function getItemsLength(items)
 end
 
 --- Gets the item count of an item from a AE system
--- @param network AE Network peripheral
--- @param name Item name to look for
--- @returns item count, or 0 if the item is nil
+--- @param network peripheral AE Network peripheral
+--- @param name string Item name to look for
+--- @return number item count, or 0 if the item is nil
 local function getAEItemCount(network, name)
     local item = {name = name}
     local networkItem = network.getItem(item)
@@ -21,16 +21,17 @@ local function getAEItemCount(network, name)
 end
 
 --- tests if we need to update items table with new barrel configuration
--- @param barrel Barrel paripheral
--- @param items Items map
+--- @param barrel peripheral Barrel peripheral
+--- @param items table Items map
 function isNeedBarrelUpdate(barrel, items)
     return #barrel.list()/2 ~= getItemsLength(items)
 end
 
 --- updates data file and items table with barrel items
--- @param barrel Barrel paripheral
--- @param dataFile
--- @returns updated item table
+--- @param barrel peripheral Barrel peripheral
+--- @param dataFile string path to datafile
+--- @param items table Items table
+--- @return table updated item table
 function updateFromBarrel(barrel, dataFile, items)
     local updated = {}
     for i=1,#barrel.list(),2 do
@@ -46,9 +47,9 @@ function updateFromBarrel(barrel, dataFile, items)
 end
 
 --- gets the seed for a specific item
--- @param barrel Barrel paripheral
--- @param name Item name to get the seed for
--- @returns name of seed or nil if cant find the item
+--- @param barrel peripheral Barrel peripheral
+--- @param name string Item name to get the seed for
+--- @return string name of seed or nil if cant find the item
 function getItemSeed(barrel, name)
     for i=1,#barrel.list(),2 do
         if barrel.list()[i].name == name then
@@ -59,8 +60,8 @@ function getItemSeed(barrel, name)
 end
 
 --- Updates the saved data file with the items table
--- @param dataFile File path to the data
--- @param items Items table to save to the file
+--- @param dataFile string path to the data
+--- @param items table of items to save to the file
 function updateDataFile(dataFile, items)
     local file = io.open(dataFile, "w")
     io.output(file)
@@ -69,8 +70,8 @@ function updateDataFile(dataFile, items)
 end
 
 --- Loads saved data into a table
--- @param dataFile File path to the data
--- @returns item table from saved file
+--- @param dataFile string path to the data
+--- @return table item table from saved file
 function loadDataFile(dataFile)
     local file = io.open(dataFile, "r")
     io.input(dataFile)
@@ -81,6 +82,8 @@ function loadDataFile(dataFile)
     return {}
 end
 
+--- Creates a table of items
+--- @param items table of items
 function getIndexedItems(items)
     local indexed = {}
     local index = 1
@@ -92,10 +95,10 @@ function getIndexedItems(items)
 end
 
 --- Gets a list of items that need to be grown
--- @param network AE Network peripheral
--- @param barrel Barrel peripheral
--- @param items Table of items
--- @returns Table of item names as keys and seed type as values
+--- @param network peripheral AE Network peripheral
+--- @param barrel peripheral Barrel peripheral
+--- @param items table of items
+--- @return table Table of item names as keys and seed type as values
 function getGrowList(network, barrel, items)
     local growList = {}
     for index,value in pairs(items) do
