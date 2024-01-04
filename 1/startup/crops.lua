@@ -20,7 +20,7 @@ local network = peripheral.wrap("meBridge_1")
 
 local data = "/data/data.txt"
 
--- <item name>=<count to stop planting>
+-- <item name>={count:4, displayName: iron}
 local items = {}
 
 -- Handle the touch events

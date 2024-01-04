@@ -2,7 +2,7 @@
 -- @param items Items table
 -- @returns length of table
 local function getItemsLength(items)
-    count = 0
+    local count = 0
     for _ in pairs(items) do count = count + 1 end
     return count
 end
@@ -33,12 +33,12 @@ end
 -- @returns updated item table
 function updateFromBarrel(barrel, dataFile, items)
     local updated = {}
-    for i=2,#barrel.list(),2 do
-        local currentItem = barrel.list()[i].name
-        if items[currentItem] then
-        	updated[currentItem] = items[currentItem]
+    for i=1,#barrel.list(),2 do
+        local currentItem = barrel.getItemDetail(i)
+        if items[currentItem.name] then
+        	updated[currentItem.name] = items[currentItem.name]
         else
-            updated[currentItem] = 1000
+            updated[currentItem.name] = {count=1000, displayName=currentItem.displayName}
         end
     end
     updateDataFile(dataFile, updated)
@@ -50,9 +50,9 @@ end
 -- @param name Item name to get the seed for
 -- @returns name of seed or nil if cant find the item
 function getItemSeed(barrel, name)
-    for i=2,#barrel.list(),2 do
+    for i=1,#barrel.list(),2 do
         if barrel.list()[i].name == name then
-            return barrel.list()[i-1].name
+            return barrel.list()[i+1].name
         end
     end
     return nil
@@ -62,7 +62,7 @@ end
 -- @param dataFile File path to the data
 -- @param items Items table to save to the file
 function updateDataFile(dataFile, items)
-    file = io.open(dataFile, "w")
+    local file = io.open(dataFile, "w")
     io.output(file)
     io.write(textutils.serialise(items))
     io.flush()
@@ -72,13 +72,23 @@ end
 -- @param dataFile File path to the data
 -- @returns item table from saved file
 function loadDataFile(dataFile)
-    file = io.open(dataFile, "r")
+    local file = io.open(dataFile, "r")
     io.input(dataFile)
-    stream = io.read("a")
+    local stream = io.read("a")
     if stream then
         return textutils.unserialize(stream)
     end
     return {}
+end
+
+function getIndexedItems(items)
+    local indexed = {}
+    local index = 1
+    for itemName,_ in pairs(items) do
+    	indexed[index] = itemName
+    	index = index + 1
+    end
+    return indexed
 end
 
 --- Gets a list of items that need to be grown
@@ -87,10 +97,10 @@ end
 -- @param items Table of items
 -- @returns Table of item names as keys and seed type as values
 function getGrowList(network, barrel, items)
-    growList = {}
+    local growList = {}
     for index,value in pairs(items) do
         aeCount = getAEItemCount(network, index)
-        if aeCount < value then
+        if aeCount < value.count then
         	growList[index] = getItemSeed(barrel, index)
         end
     end
@@ -103,5 +113,6 @@ return {
     getItemSeed,
     updateDataFile,
     loadDataFile,
-    getGrowList
+    getGrowList,
+    getIndexedItems
 }
