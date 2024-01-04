@@ -24,7 +24,7 @@ end
 --- @param barrel peripheral Barrel peripheral
 --- @param items table Items map
 function isNeedBarrelUpdate(barrel, items)
-    return #barrel.list()/2 ~= getItemsLength(items)
+    return (#barrel.list())%2==0 and #barrel.list()/2 ~= getItemsLength(items)
 end
 
 --- updates data file and items table with barrel items

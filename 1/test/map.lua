@@ -14,4 +14,3 @@ local growList = getGrowList(network, barrel, items)
 
 resetScreen()
 printItemSection(items, indexed, growList, page)
-print(screen.getSize())
