@@ -23,19 +23,13 @@ local data = "/data/data.txt"
 -- <item name>={count:4, displayName: iron}
 local items = {}
 local growList = {}
+local manualGrowList = {}
 local page = 1
+local delta = 100
 
 -- Handle the touch events
 function handleTouch(x, y)
 
-end
-
--- Handle updating the list of data from the barrel
-function updateBarrelItems()
-    if isNeedBarrelUpdate(barrel, items) then
-    	items = updateFromBarrel(barrel, data, items)
-        printItemSection(items, getIndexedItems(items), growList, page)
-    end
 end
 
 -- Listens for touch event
@@ -49,13 +43,29 @@ end
 -- Do something every second
 function listenTime()
     while true do
-		updateBarrelItems()
+        local update = false
+		if isNeedBarrelUpdate(barrel, items) then
+		    print("updating items from barrel")
+            items = updateFromBarrel(barrel, data, items)
+            update = true
+        end
+		newGrowList = getGrowList(network, barrel, items)
+		if (#barrel.list())%2==0 and #getIndexedItems(newGrowList)~=#getIndexedItems(growList) then
+		    growList = newGrowList
+		    update = true
+		end
+		if update then
+		    printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+		end
         sleep(1)
     end
 end
 
 items = loadDataFile(data)
+items = updateFromBarrel(barrel, data, items)
 resetScreen()
-printItemSection(items, getIndexedItems(items), growList, page)
-print("starting threads")
+
+printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+drawDelta(delta)
+
 parallel.waitForAll(listenTouch, listenTime)
