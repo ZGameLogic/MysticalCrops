@@ -7,6 +7,19 @@ local function getItemsLength(items)
     return count
 end
 
+--- gets the item slot of an item in storage
+--- @param storage peripheral Inventory
+--- @param name string name of item
+--- @return number slot the item is in, or nil
+local function getItemSlot(storage, name)
+    for index,item in pairs(storage.list()) do
+        if(name == item.name) then
+            return index
+        end
+    end
+    return nil
+end
+
 --- Gets the item count of an item from a AE system
 --- @param network peripheral AE Network peripheral
 --- @param name string Item name to look for
@@ -110,6 +123,18 @@ function getGrowList(network, barrel, items)
     return growList
 end
 
+--- Moves plant seeds from storage to the planter
+--- @param seedStorage peripheral storage controller for the seeds
+--- @param planter peripheral planter that plants the seeds
+--- @param seedName string name of seed to plant
+function plantSeed(seedStorage, planter, seedName)
+    local slot = getItemSlot(seedStorage, seedName)
+    if slot then
+        planter.pullItems(peripheral.getName(seedStorage), slot, 576)
+        --seedStorage.pushItems(peripheral.getName(planter), slot, 576)
+    end
+end
+
 return {
     isNeedBarrelUpdate,
     updateFromBarrel,
@@ -117,5 +142,6 @@ return {
     updateDataFile,
     loadDataFile,
     getGrowList,
-    getIndexedItems
+    getIndexedItems,
+    plantSeed
 }

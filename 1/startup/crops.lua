@@ -14,9 +14,10 @@ require("../lib/ItemLib")
 local strings = require("cc.strings")
 
 local screen = peripheral.wrap("monitor_0")
-local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
-local seedOutput = peripheral.wrap("functionalstoreage:oak_1_0")
 local network = peripheral.wrap("meBridge_1")
+local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
+local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
+local seedStorage = peripheral.wrap("functionalstorage:storage_controller_1")
 
 local data = "/data/data.txt"
 
@@ -43,19 +44,23 @@ end
 -- Do something every second
 function listenTime()
     while true do
-        local update = false
+        local updateGUI = false
 		if isNeedBarrelUpdate(barrel, items) then
 		    print("updating items from barrel")
             items = updateFromBarrel(barrel, data, items)
-            update = true
+            updateGUI = true
         end
 		newGrowList = getGrowList(network, barrel, items)
 		if (#barrel.list())%2==0 and #getIndexedItems(newGrowList)~=#getIndexedItems(growList) then
 		    growList = newGrowList
-		    update = true
+		    updateGUI = true
 		end
-		if update then
+		if updateGUI then
 		    printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+		end
+		if next(growList) then
+            _,seed = next(growList)
+            plantSeed(seedStorage, planter, seed)
 		end
         sleep(1)
     end

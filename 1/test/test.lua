@@ -1,16 +1,4 @@
-local function formatNumber(number)
-    if(number > 1000000000000) then
-        return string.format("%.2fT", number/1000000000000)
-    elseif(number > 1000000000) then
-        return string.format("%.2fB", number/1000000000)
-    elseif(number > 1000000) then
-        return string.format("%.2fM", number/1000000)
-    else
-        return string.format("%d", number)
-    end
-end
+local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
+local storage = peripheral.wrap("functionalstorage:storage_controller_1")
 
-local number = 129999000
-
-print(formatNumber(number))
-print(number)
+storage.pushItems(peripheral.getName(storage), 59)
