@@ -46,7 +46,6 @@ function listenTime()
     while true do
         local updateGUI = false
 		if isNeedBarrelUpdate(barrel, items) then
-		    print("updating items from barrel")
             items = updateFromBarrel(barrel, data, items)
             updateGUI = true
         end
@@ -59,8 +58,9 @@ function listenTime()
 		    printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
 		end
 		if next(growList) then
-            _,seed = next(growList)
-            plantSeed(seedStorage, planter, seed)
+            for _,seed in pairs(growList) do
+                plantSeed(seedStorage, planter, seed)
+            end
 		end
         sleep(1)
     end
