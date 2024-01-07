@@ -28,7 +28,11 @@ local function getAEItemCount(network, name)
     local item = {name = name}
     local networkItem = network.getItem(item)
     if(networkItem) then
-    	return networkItem.amount
+        if(networkItem.amount) then
+    	    return networkItem.amount
+    	else
+    	    return 0
+    	end
     end
     return 0
 end
