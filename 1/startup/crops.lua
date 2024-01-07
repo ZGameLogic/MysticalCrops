@@ -20,6 +20,7 @@ local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
 local seedStorage = peripheral.wrap("functionalstorage:storage_controller_1")
 
 DELTA_MAX = 10000000000
+PAGE_ITEM_COUNT = 20
 
 local data = "/data/data.txt"
 
@@ -33,35 +34,49 @@ local delta = 100
 -- Handle the touch events
 function handleTouch(x, y)
     if x >= 42 and x <= 47 and y == 6 then
-    -- delta divide
+        -- delta divide
         if delta >= 10 then
             delta = delta / 10
             drawDelta(delta)
         end
     elseif x >= 49 and x <= 55 and y == 6 then
-    -- delta multiply
+        -- delta multiply
         if delta < DELTA_MAX then
             delta = delta * 10
             drawDelta(delta)
         end
     elseif x == 35 and y >= 4 and y <= 23 then
-    -- add delta
-        local item = items[getIndexedItems(items)[y-3]]
+        -- add delta
+        local item = items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]]
         if item then
-            items[getIndexedItems(items)[y-3]].count = item.count + delta
+            items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = item.count + delta
             updateDataFile(data, items)
             printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
         end
     elseif x == 36 and y >= 4 and y <= 23 then
-    -- sub delta
-        local item = items[getIndexedItems(items)[y-3]]
+        -- sub delta
+        local item = items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]]
         if item then
-            items[getIndexedItems(items)[y-3]].count = item.count - delta
-            if items[getIndexedItems(items)[y-3]].count < 0 then
-                items[getIndexedItems(items)[y-3]].count = 0
+            items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = item.count - delta
+            if items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count < 0 then
+                items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = 0
             end
             updateDataFile(data, items)
             printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+        end
+    elseif x >= 2 and x <= 25 and y >= 4 and y <= 23 then
+        -- select or deselect from grow list
+        local item = getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]
+        if item then
+            local seed = getItemSeed(barrel, item)
+            if seed then
+                if manualGrowList[item] then
+                    manualGrowList = removeFromTable(manualGrowList, item)
+                else
+                    manualGrowList = addToTable(manualGrowList, item, seed)
+                end
+                printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+            end
         end
     end
     print(x)
@@ -91,6 +106,11 @@ function listenTime()
 		end
 		if updateGUI then
 		    printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+		end
+		if next(manualGrowList) then
+		    for _,seed in pairs(manualGrowList) do
+                plantSeed(seedStorage, planter, seed)
+            end
 		end
 		if next(growList) then
             for _,seed in pairs(growList) do

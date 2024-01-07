@@ -4,8 +4,6 @@
 local strings = require("cc.strings")
 local screen = peripheral.wrap("monitor_0")
 
-local PAGE_ITEM_COUNT = 20
-
 --- Shrinks and formats large numbers
 -- @param number
 -- @returns Formatted number

@@ -135,6 +135,32 @@ function plantSeed(seedStorage, planter, seedName)
     end
 end
 
+--- Adds a value to an index to a table
+--- @param table table to add to
+--- @param index string index of the item
+--- @param value string value of the item
+--- @return table with the updated information
+function addToTable(table, index, value)
+    local t = {}
+    for i,v in pairs(table) do t[i] = v end
+    t[index] = value
+    return t
+end
+
+--- Removes a value to an index to a table
+--- @param table table to add to
+--- @param index string index of the item
+--- @return table with the updated information
+function removeFromTable(table, index)
+    local t = {}
+    for i,v in pairs(table) do
+        if i~=index then
+            t[i] = v
+        end
+    end
+    return t
+end
+
 return {
     isNeedBarrelUpdate,
     updateFromBarrel,
@@ -143,5 +169,7 @@ return {
     loadDataFile,
     getGrowList,
     getIndexedItems,
-    plantSeed
+    plantSeed,
+    addToTable,
+    removeFromTable
 }
