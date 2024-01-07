@@ -19,6 +19,8 @@ local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
 local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
 local seedStorage = peripheral.wrap("functionalstorage:storage_controller_1")
 
+DELTA_MAX = 10000000000
+
 local data = "/data/data.txt"
 
 -- <item name>={count:4, displayName: iron}
@@ -30,7 +32,40 @@ local delta = 100
 
 -- Handle the touch events
 function handleTouch(x, y)
-
+    if x >= 42 and x <= 47 and y == 6 then
+    -- delta divide
+        if delta >= 10 then
+            delta = delta / 10
+            drawDelta(delta)
+        end
+    elseif x >= 49 and x <= 55 and y == 6 then
+    -- delta multiply
+        if delta < DELTA_MAX then
+            delta = delta * 10
+            drawDelta(delta)
+        end
+    elseif x == 35 and y >= 4 and y <= 23 then
+    -- add delta
+        local item = items[getIndexedItems(items)[y-3]]
+        if item then
+            items[getIndexedItems(items)[y-3]].count = item.count + delta
+            updateDataFile(data, items)
+            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+        end
+    elseif x == 36 and y >= 4 and y <= 23 then
+    -- sub delta
+        local item = items[getIndexedItems(items)[y-3]]
+        if item then
+            items[getIndexedItems(items)[y-3]].count = item.count - delta
+            if items[getIndexedItems(items)[y-3]].count < 0 then
+                items[getIndexedItems(items)[y-3]].count = 0
+            end
+            updateDataFile(data, items)
+            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+        end
+    end
+    print(x)
+    print(y)
 end
 
 -- Listens for touch event
