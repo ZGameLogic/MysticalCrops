@@ -28,11 +28,34 @@ local function getAEItemCount(network, name)
     return 0
 end
 
+--- Gets the index of an item from the item table
+--- @param items table items table
+--- @param itemName string Item name
+--- @return number index or nil if not found
+local function tableIndexItem(items, itemName)
+    for index,item in pairs(items) do
+        if(item.name == itemName) then return index end
+    end
+    return nil
+end
+
+--- Checks if a grow list table contains an item
+--- @param growList table grow list table
+--- @param itemName string item name
+--- @return boolean true if found
+function growListContainsItem(growList, itemName)
+    for currentItemName,_ in pairs(growList) do
+        if(currentItemName == itemName) then return true end
+    end
+    return false
+end
+
 --- tests if we need to update items table with new barrel configuration
 --- @param barrel peripheral Barrel peripheral
 --- @param items table Items map
 function isNeedBarrelUpdate(barrel, items)
-    return (#barrel.list())%2==0 and #barrel.list()/2 ~= getItemsLength(items)
+    local barrelList = barrel.list()
+    return (#barrelList)%2==0 and #barrelList/2 ~= #items
 end
 
 --- updates data file and items table with barrel items
@@ -42,13 +65,16 @@ end
 --- @return table updated item table
 function updateFromBarrel(barrel, dataFile, items)
     local updated = {}
+    local updatedIndex = 1
     for i=1,#barrel.list(),2 do
         local currentItem = barrel.getItemDetail(i)
-        if items[currentItem.name] then
-        	updated[currentItem.name] = items[currentItem.name]
+        local tableItemIndex = tableIndexItem(items, currentItem.name)
+        if tableItemIndex then
+        	updated[updatedIndex] = items[tableItemIndex]
         else
-            updated[currentItem.name] = {count=1000, displayName=currentItem.displayName}
+            updated[updatedIndex] = {count=1000, displayName=currentItem.displayName, name=currentItem.name}
         end
+        updatedIndex = updatedIndex + 1
     end
     updateDataFile(dataFile, updated)
     return updated
@@ -93,11 +119,12 @@ end
 
 --- Creates a table of items
 --- @param items table of items
+--- @return table indexed table by numbers
 function getIndexedItems(items)
     local indexed = {}
     local index = 1
-    for itemName,_ in pairs(items) do
-    	indexed[index] = itemName
+    for _,item in pairs(items) do
+    	indexed[index] = item
     	index = index + 1
     end
     return indexed
@@ -110,10 +137,10 @@ end
 --- @return table Table of item names as keys and seed type as values
 function getGrowList(network, barrel, items)
     local growList = {}
-    for index,value in pairs(items) do
-        aeCount = getAEItemCount(network, index)
-        if aeCount < value.count then
-        	growList[index] = getItemSeed(barrel, index)
+    for _,item in pairs(items) do
+        aeCount = getAEItemCount(network, item.name)
+        if aeCount < item.count then
+        	growList[item.name] = getItemSeed(barrel, item.name)
         end
     end
     return growList
@@ -156,16 +183,6 @@ function removeFromTable(table, index)
     return t
 end
 
---- gets the length of items table
---- @param items table Items table
---- @return number length of table
-function getItemsLength(items)
-    local count = 0
-    for _ in pairs(items) do count = count + 1 end
-    return count
-end
-
-
 return {
     isNeedBarrelUpdate,
     updateFromBarrel,
@@ -177,5 +194,5 @@ return {
     plantSeed,
     addToTable,
     removeFromTable,
-    getItemsLength
+    growListContainsItem
 }

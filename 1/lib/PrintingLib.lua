@@ -1,6 +1,8 @@
 --[[
     Screen size is 61 x 26
 ]]--
+require("../lib/ItemLib")
+
 local strings = require("cc.strings")
 local screen = peripheral.wrap("monitor_0")
 
@@ -68,35 +70,34 @@ end
 
 --- Prints the item section of the screen
 --- @param items table Items table
---- @param indexedItems table Items index
 --- @param growList table grow list of seeds for coloring
 --- @param manualGrowList table manual grow list of seeds for coloring
 --- @param page number Current page we are on
-function printItemSection(items, indexedItems, growList, manualGrowList, page)
+function printItemSection(items, growList, manualGrowList, page)
     screen.setCursorPos(1,1)
     writeLine("|====================================|")
     writeLine("| "..strings.ensure_width("Resource page:".. page,22).." |Threshold  |")
     writeLine("|------------------------|-----------|")
     for i=(page-1)*PAGE_ITEM_COUNT+1,PAGE_ITEM_COUNT*page do
-    	item = indexedItems[i]
+    	item = items[i]
     	if item then
             color = 0x1
-            if manualGrowList[item] then
+            if growListContainsItem(manualGrowList, item.name) then
                 color = 0x2
-            elseif growList[item] then
+            elseif growListContainsItem(growList, item.name) then
                 color = 0x2000
             elseif((i-1)%2==0) then
                 color = 0x1
             else
                 color = 0x100
             end
-            writeItemLine(items[item], color)
+            writeItemLine(item, color)
         else
             writeItemLine(nil, 0x1)
     	end
     end
     writeLine("|====================================|")
-    if #indexedItems > PAGE_ITEM_COUNT then
+    if #items > PAGE_ITEM_COUNT then
         writeLine("       < Page "..page.." >")
     end
 end

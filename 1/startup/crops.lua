@@ -11,9 +11,6 @@
 require("../lib/PrintingLib")
 require("../lib/ItemLib")
 
-local strings = require("cc.strings")
-
-local screen = peripheral.wrap("monitor_0")
 local network = peripheral.wrap("meBridge_1")
 local barrel = peripheral.wrap("sophisticatedstorage:barrel_0")
 local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
@@ -24,7 +21,7 @@ PAGE_ITEM_COUNT = 20
 
 local data = "/data/data.txt"
 
--- <item name>={count:4, displayName: iron}
+-- {itemName: minecraft:iron_ingot, count:4, displayName: Iron Ingot}
 local items = {}
 local growList = {}
 local manualGrowList = {}
@@ -47,49 +44,49 @@ function handleTouch(x, y)
         end
     elseif x == 35 and y >= 4 and y <= 23 then
         -- add delta
-        local item = items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]]
+        local item = items[y-3+((page-1)*PAGE_ITEM_COUNT)]
         if item then
-            items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = item.count + delta
+            items[y-3+((page-1)*PAGE_ITEM_COUNT)].count = item.count + delta
             updateDataFile(data, items)
-            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+            printItemSection(items, growList, manualGrowList, page)
         end
     elseif x == 36 and y >= 4 and y <= 23 then
         -- sub delta
-        local item = items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]]
+        local item = items[y-3+((page-1)*PAGE_ITEM_COUNT)]
         if item then
-            items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = item.count - delta
-            if items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count < 0 then
-                items[getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]].count = 0
+            items[y-3+((page-1)*PAGE_ITEM_COUNT)].count = item.count - delta
+            if items[y-3+((page-1)*PAGE_ITEM_COUNT)].count < 0 then
+                items[y-3+((page-1)*PAGE_ITEM_COUNT)].count = 0
             end
             updateDataFile(data, items)
-            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+            printItemSection(items, growList, manualGrowList, page)
         end
     elseif x >= 2 and x <= 25 and y >= 4 and y <= 23 then
         -- select or deselect from grow list
-        local item = getIndexedItems(items)[y-3+((page-1)*PAGE_ITEM_COUNT)]
+        local item = items[y-3+((page-1)*PAGE_ITEM_COUNT)]
         if item then
-            local seed = getItemSeed(barrel, item)
+            local seed = getItemSeed(barrel, item.name)
             if seed then
-                if manualGrowList[item] then
-                    manualGrowList = removeFromTable(manualGrowList, item)
+                if growListContainsItem(manualGrowList, item.name) then
+                    manualGrowList = removeFromTable(manualGrowList, item.name)
                 else
-                    manualGrowList = addToTable(manualGrowList, item, seed)
+                    manualGrowList = addToTable(manualGrowList, item.name, seed)
                 end
-                printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+                printItemSection(items, growList, manualGrowList, page)
             end
         end
     elseif x >= 17 and x <= 25 and y == 25 then
         -- page up
-        local maxPage = math.ceil(getItemsLength(items)/PAGE_ITEM_COUNT)
+        local maxPage = math.ceil(#items/PAGE_ITEM_COUNT)
         if page + 1 <= maxPage then
             page = page + 1
-            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+            printItemSection(items, growList, manualGrowList, page)
         end
     elseif x >= 2 and x <= 8 and y == 25 then
         -- page down
         if page > 1 then
             page = page - 1
-            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+            printItemSection(items, growList, manualGrowList, page)
         end
     end
 end
@@ -110,13 +107,13 @@ function listenTime()
             items = updateFromBarrel(barrel, data, items)
             updateGUI = true
         end
-		newGrowList = getGrowList(network, barrel, items)
+		local newGrowList = getGrowList(network, barrel, items)
 		if (#barrel.list())%2==0 and #getIndexedItems(newGrowList)~=#getIndexedItems(growList) then
 		    growList = newGrowList
 		    updateGUI = true
 		end
 		if updateGUI then
-		    printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+		    printItemSection(items, growList, manualGrowList, page)
 		end
 		if next(manualGrowList) then
 		    for _,seed in pairs(manualGrowList) do
@@ -136,7 +133,7 @@ items = loadDataFile(data)
 items = updateFromBarrel(barrel, data, items)
 resetScreen()
 
-printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+printItemSection(items, growList, manualGrowList, page)
 drawDelta(delta)
 
 parallel.waitForAll(listenTouch, listenTime)
