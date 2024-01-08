@@ -28,14 +28,10 @@ local function getAEItemCount(network, name)
     return 0
 end
 
---- Checks if a table contains a specific item already
-local function tableContainsItem(items, itemName)
-    for _,item in pairs(items) do
-        if(item.name == itemName) then return true end
-    end
-    return false
-end
-
+--- Gets the index of an item from the item table
+--- @param items table items table
+--- @param itemName string Item name
+--- @return number index or nil if not found
 local function tableIndexItem(items, itemName)
     for index,item in pairs(items) do
         if(item.name == itemName) then return index end
@@ -43,6 +39,10 @@ local function tableIndexItem(items, itemName)
     return nil
 end
 
+--- Checks if a grow list table contains an item
+--- @param growList table grow list table
+--- @param itemName string item name
+--- @return boolean true if found
 function growListContainsItem(growList, itemName)
     for currentItemName,_ in pairs(growList) do
         if(currentItemName == itemName) then return true end
@@ -119,14 +119,15 @@ end
 
 --- Creates a table of items
 --- @param items table of items
+--- @return table indexed table by numbers
 function getIndexedItems(items)
     local indexed = {}
     local index = 1
     for _,item in pairs(items) do
-    	indexed[index] = item.name
+    	indexed[index] = item
     	index = index + 1
     end
-    return items
+    return indexed
 end
 
 --- Gets a list of items that need to be grown

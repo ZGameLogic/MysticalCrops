@@ -107,7 +107,7 @@ function listenTime()
             items = updateFromBarrel(barrel, data, items)
             updateGUI = true
         end
-		newGrowList = getGrowList(network, barrel, items)
+		local newGrowList = getGrowList(network, barrel, items)
 		if (#barrel.list())%2==0 and #getIndexedItems(newGrowList)~=#getIndexedItems(growList) then
 		    growList = newGrowList
 		    updateGUI = true

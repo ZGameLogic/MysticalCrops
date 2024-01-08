@@ -82,9 +82,9 @@ function printItemSection(items, growList, manualGrowList, page)
     	item = items[i]
     	if item then
             color = 0x1
-            if growListContainsItem(growList, item.name) then
+            if growListContainsItem(manualGrowList, item.name) then
                 color = 0x2
-            elseif growListContainsItem(manualGrowList, item.name) then
+            elseif growListContainsItem(growList, item.name) then
                 color = 0x2000
             elseif((i-1)%2==0) then
                 color = 0x1
