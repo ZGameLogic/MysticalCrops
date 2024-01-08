@@ -1,14 +1,9 @@
-local planter = peripheral.wrap("industrialforegoing:plant_sower_0")
-local storage = peripheral.wrap("functionalstorage:storage_controller_1")
-
 local t = {
-    ["a"] = "c",
-    ["b"] = "a",
-    ["c"] = "b",
-    ["d"] = "d",
-    ["e"] = "e",
+    [1]= "bep",
+    [2]= "beep",
+    [3]="beeep"
 }
 
-table.sort(t, function (a, b) return a[2] > b[2] end)
+local key = 1
 
-print(next(t))
+print(t[key])
