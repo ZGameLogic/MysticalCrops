@@ -19,12 +19,17 @@ local function formatNumber(number)
     end
 end
 
+--- Writes a line to the screen, and then puts the cursor on the first index of the next line
+--- @param line string Line to write to screen
 local function writeLine(line)
     screen.write(line)
     x,y = screen.getCursorPos()
     screen.setCursorPos(1,y+1)
 end
 
+--- Writes an item line to the screen
+--- @param item string item display name
+--- @param color Color color to make item text
 local function writeItemLine(item, color)
     if item then
         screen.setTextColor(0x1)
@@ -50,7 +55,6 @@ local function writeItemLine(item, color)
     end
 
 --- Completely clears the screen
--- @param screen Screen peripheral
 function resetScreen()
     screen.setTextScale(1)
     screen.setTextColor(0x1)
@@ -62,6 +66,12 @@ function resetScreen()
     screen.setCursorPos(1,1)
 end
 
+--- Prints the item section of the screen
+--- @param items table Items table
+--- @param indexedItems table Items index
+--- @param growList table grow list of seeds for coloring
+--- @param manualGrowList table manual grow list of seeds for coloring
+--- @param page number Current page we are on
 function printItemSection(items, indexedItems, growList, manualGrowList, page)
     screen.setCursorPos(1,1)
     writeLine("|====================================|")
@@ -91,7 +101,8 @@ function printItemSection(items, indexedItems, growList, manualGrowList, page)
     end
 end
 
--- Draw delta to the screen
+--- Draws the delta section to the screen
+--- @param delta number Current delta
 function drawDelta(delta)
     local x = 41
     local y = 1

@@ -78,9 +78,20 @@ function handleTouch(x, y)
                 printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
             end
         end
+    elseif x >= 17 and x <= 25 and y == 25 then
+        -- page up
+        local maxPage = math.ceil(getItemsLength(items)/PAGE_ITEM_COUNT)
+        if page + 1 <= maxPage then
+            page = page + 1
+            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+        end
+    elseif x >= 2 and x <= 8 and y == 25 then
+        -- page down
+        if page > 1 then
+            page = page - 1
+            printItemSection(items, getIndexedItems(items), growList, manualGrowList, page)
+        end
     end
-    print(x)
-    print(y)
 end
 
 -- Listens for touch event

@@ -1,12 +1,3 @@
---- gets the length of items table
---- @param items table Items table
---- @return number length of table
-local function getItemsLength(items)
-    local count = 0
-    for _ in pairs(items) do count = count + 1 end
-    return count
-end
-
 --- gets the item slot of an item in storage
 --- @param storage peripheral Inventory
 --- @param name string name of item
@@ -68,9 +59,10 @@ end
 --- @param name string Item name to get the seed for
 --- @return string name of seed or nil if cant find the item
 function getItemSeed(barrel, name)
-    for i=1,#barrel.list(),2 do
-        if barrel.list()[i].name == name then
-            return barrel.list()[i+1].name
+    local barrelList = barrel.list()
+    for i=1,#barrelList,2 do
+        if barrelList[i].name == name then
+            return barrelList[i+1].name
         end
     end
     return nil
@@ -135,7 +127,6 @@ function plantSeed(seedStorage, planter, seedName)
     local slot = getItemSlot(seedStorage, seedName)
     if slot then
         planter.pullItems(peripheral.getName(seedStorage), slot, 576)
-        --seedStorage.pushItems(peripheral.getName(planter), slot, 576)
     end
 end
 
@@ -165,6 +156,16 @@ function removeFromTable(table, index)
     return t
 end
 
+--- gets the length of items table
+--- @param items table Items table
+--- @return number length of table
+function getItemsLength(items)
+    local count = 0
+    for _ in pairs(items) do count = count + 1 end
+    return count
+end
+
+
 return {
     isNeedBarrelUpdate,
     updateFromBarrel,
@@ -175,5 +176,6 @@ return {
     getIndexedItems,
     plantSeed,
     addToTable,
-    removeFromTable
+    removeFromTable,
+    getItemsLength
 }
