@@ -26,6 +26,7 @@ local items = {}
 local growList = {}
 local manualGrowList = {}
 local page = 1
+local growItemIndex = 1
 local delta = 100
 
 -- Handle the touch events
@@ -88,6 +89,26 @@ function handleTouch(x, y)
             page = page - 1
             printItemSection(items, growList, manualGrowList, page)
         end
+    elseif x >= 42 and x <= 50 and y == 15 then
+        -- grow list down
+        local combined = combinedGrowList(growList, manualGrowList)
+        if(growItemIndex > 1) then
+            growItemIndex = growItemIndex -1
+            drawGrowItem(combined, growItemIndex)
+        else
+            growItemIndex = #combined
+            drawGrowItem(combined, growItemIndex)
+        end
+    elseif x >= 51 and x <= 60 and y == 15 then
+        -- grow list up
+        local combined = combinedGrowList(growList, manualGrowList)
+        if growItemIndex < #combined then
+            growItemIndex = growItemIndex + 1
+            drawGrowItem(combined, growItemIndex)
+        else
+            growItemIndex = 1
+            drawGrowItem(combined, growItemIndex)
+        end
     end
 end
 
@@ -108,22 +129,33 @@ function listenTime()
             updateGUI = true
         end
 		local newGrowList = getGrowList(network, barrel, items)
-		if (#barrel.list())%2==0 and #getIndexedItems(newGrowList)~=#getIndexedItems(growList) then
-		    growList = newGrowList
+		if (#barrel.list())%2==0 and #newGrowList~=#growList then
 		    updateGUI = true
 		end
+        growList = newGrowList
+        local combined = combinedGrowList(growList, manualGrowList)
+        if growItemIndex > #combined then
+            growItemIndex = 1
+        end
 		if updateGUI then
 		    printItemSection(items, growList, manualGrowList, page)
+            if #combined > 1 then
+                drawGrowItem(combined, growItemIndex)
+            else
+                drawEmptyGrowItem()
+            end
 		end
 		if next(manualGrowList) then
-		    for _,seed in pairs(manualGrowList) do
-                plantSeed(seedStorage, planter, seed)
+		    for _,entry in pairs(manualGrowList) do
+                plantSeed(seedStorage, planter, entry.seed)
             end
+            updateGrowItemCount(combined, growItemIndex)
 		end
 		if next(growList) then
-            for _,seed in pairs(growList) do
-                plantSeed(seedStorage, planter, seed)
+            for _,entry in pairs(growList) do
+                plantSeed(seedStorage, planter, entry.seed)
             end
+            updateGrowItemCount(combined, growItemIndex)
 		end
         sleep(1)
     end

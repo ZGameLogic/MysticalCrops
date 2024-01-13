@@ -67,8 +67,8 @@ end
 --- @param itemName string item name
 --- @return boolean true if found
 function growListContainsItem(growList, itemName)
-    for currentItemName,_ in pairs(growList) do
-        if(currentItemName == itemName) then return true end
+    for _,item in pairs(growList) do
+        if(item.name == itemName) then return true end
     end
     return false
 end
@@ -162,10 +162,18 @@ end
 --- @return table Table of item names as keys and seed type as values
 function getGrowList(network, barrel, items)
     local growList = {}
+    local index = 1
     for _,item in pairs(items) do
         aeCount = getAEItemCount(network, item.name)
         if aeCount < item.count then
-        	growList[item.name] = getItemSeed(barrel, item.name)
+            growList[index] = {
+                ["name"] = item.name,
+                ["seed"] = getItemSeed(barrel, item.name),
+                ["count"] = aeCount,
+                ["threshold"] = item.count,
+                ["displayName"] = item.displayName
+            }
+        	index = index + 1
         end
     end
     return growList
@@ -182,30 +190,44 @@ function plantSeed(seedStorage, planter, seedName)
     end
 end
 
---- Adds a value to an index to a table
+--- Adds a value to a table
 --- @param table table to add to
---- @param index string index of the item
 --- @param value string value of the item
 --- @return table with the updated information
-function addToTable(table, index, value)
+function addToTable(table, value)
     local t = {}
     for i,v in pairs(table) do t[i] = v end
-    t[index] = value
+    t[#t + 1] = value
     return t
 end
 
 --- Removes a value to an index to a table
 --- @param table table to add to
---- @param index string index of the item
+--- @param itemName string item name of the item
 --- @return table with the updated information
-function removeFromTable(table, index)
+function removeFromTable(table, itemName)
     local t = {}
     for i,v in pairs(table) do
-        if i~=index then
+        if v.name~=itemName then
             t[i] = v
         end
     end
     return t
+end
+
+function combinedGrowList(growList, manualGrowList)
+    local combined = {}
+    local index = 1
+    for _,entry in pairs(growList) do
+        combined[index] = entry
+        index = index + 1
+    end
+    for _,entry in pairs(manualGrowList) do
+        combined[index] = entry
+        index = index + 1
+    end
+    local sorted = sortItems(combined)
+    return sorted
 end
 
 return {
@@ -219,5 +241,6 @@ return {
     plantSeed,
     addToTable,
     removeFromTable,
-    growListContainsItem
+    growListContainsItem,
+    combinedGrowList
 }

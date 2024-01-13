@@ -29,6 +29,25 @@ local function writeLine(line)
     screen.setCursorPos(1,y+1)
 end
 
+--- Writes a grow list entry to the monitor
+--- @param entry table Entry
+local function writeGrowListItem(entry)
+    local x = 41
+    local y = 10
+    screen.setCursorPos(x,y)
+    screen.write("|"..strings.ensure_width(entry.displayName, 19).."|")
+    _,y = screen.getCursorPos()
+    screen.setCursorPos(x,y+1)
+    screen.write("|Threshold:"..strings.ensure_width((entry.threshold..""), 9).."|")
+    _,y = screen.getCursorPos()
+    screen.setCursorPos(x,y+1)
+    screen.write("|Count:"..strings.ensure_width((entry.count..""), 13).."|")
+    _,y = screen.getCursorPos()
+    screen.setCursorPos(x,y+1)
+    local grown = (entry.count / entry.threshold) * 100
+    screen.write("|Grown:"..strings.ensure_width(grown.."%", 13).."|")
+end
+
 --- Writes an item line to the screen
 --- @param item string item display name
 --- @param color Color color to make item text
@@ -142,8 +161,52 @@ function drawDelta(delta)
     screen.write("|==============|")
 end
 
+function drawGrowItem(cGrowList, growItemIndex)
+    local y = 10
+    local x = 41
+    -- Clear current grow item
+    for i=y,y+6 do
+        screen.setCursorPos(x, i)
+        screen.write("                        ")
+    end
+    screen.setCursorPos(x, y-1)
+    screen.write("|===================|")
+    writeGrowListItem(cGrowList[growItemIndex])
+    y = y + 4
+    screen.setCursorPos(x, y)
+    screen.write("|===================|")
+    if(#cGrowList > 1) then
+        screen.setCursorPos(x, y+1)
+        screen.write("      <      >       ")
+    end
+end
+
+function drawEmptyGrowItem()
+    local y = 10
+    local x = 41
+    -- Clear current grow item
+    for i=y,y+6 do
+        screen.setCursorPos(x, i)
+        screen.write("                        ")
+    end
+end
+
+function updateGrowItemCount(cGrowList, growItemIndex)
+    local x = 41
+    local y = 12
+    local entry = cGrowList[growItemIndex]
+    screen.setCursorPos(x,y)
+    screen.write("|Count:"..strings.ensure_width((entry.count..""), 13).."|")
+    screen.setCursorPos(x,y+1)
+    local grown = (entry.count / entry.threshold) * 100
+    screen.write("|Grown:"..strings.ensure_width(grown.."%", 13).."|")
+end
+
 return {
     resetScreen,
     printItemSection,
-    drawDelta
+    drawDelta,
+    drawGrowItem,
+    updateGrowItemCount,
+    drawEmptyGrowItem
 }
