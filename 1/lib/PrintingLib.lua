@@ -7,8 +7,8 @@ local strings = require("cc.strings")
 local screen = peripheral.wrap("monitor_0")
 
 --- Shrinks and formats large numbers
--- @param number
--- @returns Formatted number
+--- @param number
+--- @returns Formatted number
 local function formatNumber(number)
     if(number > 1000000000000) then
         return string.format("%.2fT", number/1000000000000)
@@ -115,7 +115,7 @@ function drawDelta(delta)
     -- Draw new delta
     screen.setTextColor(0x1)
     screen.setCursorPos(x, y)
-    screen.write("________________")
+    screen.write("|==============|")
     screen.setCursorPos(x, y+1)
     screen.write("|    Delta     |")
     screen.setCursorPos(x, y+2)

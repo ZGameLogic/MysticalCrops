@@ -1,9 +1,19 @@
 local t = {
-    [1]= "bep",
-    [2]= "beep",
-    [3]="beeep"
+    [1] = {
+        ["displayName"] = "Iron Ingot"
+    },
+    [2] = {
+        ["displayName"] = "Gold Ingot"
+    },
+    [3] = {
+        ["displayName"] = "Apple"
+    },
 }
 
-local key = 1
+local function sort(items)
+    return items
+end
 
-print(t[key])
+t = sort(t)
+
+print(next(t[1]))

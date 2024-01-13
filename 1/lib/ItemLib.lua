@@ -39,6 +39,29 @@ local function tableIndexItem(items, itemName)
     return nil
 end
 
+--- Sorts an items array by display name
+--- @param inputItems table items table
+--- @return table Sorted table by display name
+local function sortItems(inputItems)
+    -- copy over everything to a new table
+    local items = {}
+    for i,value in pairs(inputItems) do items[i] = value end
+    for i=1,#items-1 do
+        -- find smallest item
+        local smallest = i
+        for j=i+1,#items do
+            if items[j].displayName < items[smallest].displayName then
+                smallest = j
+            end
+        end
+        -- swap smallest with index
+        local indexItem = items[i]
+        items[i] = items[smallest]
+        items[smallest] = indexItem
+    end
+    return items
+end
+
 --- Checks if a grow list table contains an item
 --- @param growList table grow list table
 --- @param itemName string item name
@@ -76,6 +99,7 @@ function updateFromBarrel(barrel, dataFile, items)
         end
         updatedIndex = updatedIndex + 1
     end
+    updated = sortItems(updated)
     updateDataFile(dataFile, updated)
     return updated
 end
@@ -112,7 +136,8 @@ function loadDataFile(dataFile)
     io.input(dataFile)
     local stream = io.read("a")
     if stream then
-        return textutils.unserialize(stream)
+        local items = textutils.unserialize(stream)
+        return sortItems(items)
     end
     return {}
 end
