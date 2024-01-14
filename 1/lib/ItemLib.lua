@@ -11,23 +11,6 @@ local function getItemSlot(storage, name)
     return nil
 end
 
---- Gets the item count of an item from a AE system
---- @param network peripheral AE Network peripheral
---- @param name string Item name to look for
---- @return number item count, or 0 if the item is nil
-local function getAEItemCount(network, name)
-    local item = {name = name}
-    local networkItem = network.getItem(item)
-    if(networkItem) then
-        if(networkItem.amount) then
-    	    return networkItem.amount
-    	else
-    	    return 0
-    	end
-    end
-    return 0
-end
-
 --- Gets the index of an item from the item table
 --- @param items table items table
 --- @param itemName string Item name
@@ -60,6 +43,23 @@ local function sortItems(inputItems)
         items[smallest] = indexItem
     end
     return items
+end
+
+--- Gets the item count of an item from a AE system
+--- @param network peripheral AE Network peripheral
+--- @param name string Item name to look for
+--- @return number item count, or 0 if the item is nil
+function getAEItemCount(network, name)
+    local item = {name = name}
+    local networkItem = network.getItem(item)
+    if(networkItem) then
+        if(networkItem.amount) then
+            return networkItem.amount
+        else
+            return 0
+        end
+    end
+    return 0
 end
 
 --- Checks if a grow list table contains an item
@@ -179,6 +179,13 @@ function getGrowList(network, barrel, items)
     return growList
 end
 
+function getManualGrowList(network, manualGrowList)
+    for index,item in pairs(manualGrowList) do
+        manualGrowList[index].count = getAEItemCount(network, item.name)
+    end
+    return manualGrowList
+end
+
 --- Moves plant seeds from storage to the planter
 --- @param seedStorage peripheral storage controller for the seeds
 --- @param planter peripheral planter that plants the seeds
@@ -192,7 +199,7 @@ end
 
 --- Adds a value to a table
 --- @param table table to add to
---- @param value string value of the item
+--- @param value table value of the item
 --- @return table with the updated information
 function addToTable(table, value)
     local t = {}
@@ -242,5 +249,7 @@ return {
     addToTable,
     removeFromTable,
     growListContainsItem,
-    combinedGrowList
+    combinedGrowList,
+    getAEItemCount,
+    getManualGrowList
 }

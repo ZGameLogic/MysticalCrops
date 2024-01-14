@@ -71,7 +71,15 @@ function handleTouch(x, y)
                 if growListContainsItem(manualGrowList, item.name) then
                     manualGrowList = removeFromTable(manualGrowList, item.name)
                 else
-                    manualGrowList = addToTable(manualGrowList, item.name, seed)
+                    local count = getAEItemCount(network, item.name)
+                    local growListItem = {
+                        ["name"] = item.name,
+                        ["seed"] = getItemSeed(barrel, item.name),
+                        ["count"] = count,
+                        ["threshold"] = item.count,
+                        ["displayName"] = item.displayName
+                    }
+                    manualGrowList = addToTable(manualGrowList, growListItem)
                 end
                 printItemSection(items, growList, manualGrowList, page)
             end
@@ -128,6 +136,7 @@ function listenTime()
             items = updateFromBarrel(barrel, data, items)
             updateGUI = true
         end
+        manualGrowList = getManualGrowList(network, manualGrowList)
 		local newGrowList = getGrowList(network, barrel, items)
 		if (#barrel.list())%2==0 and #newGrowList~=#growList then
 		    updateGUI = true
@@ -139,23 +148,21 @@ function listenTime()
         end
 		if updateGUI then
 		    printItemSection(items, growList, manualGrowList, page)
-            if #combined > 1 then
-                drawGrowItem(combined, growItemIndex)
-            else
-                drawEmptyGrowItem()
-            end
 		end
+        if #combined > 0 then
+            drawGrowItem(combined, growItemIndex)
+        else
+            drawEmptyGrowItem()
+        end
 		if next(manualGrowList) then
 		    for _,entry in pairs(manualGrowList) do
                 plantSeed(seedStorage, planter, entry.seed)
             end
-            updateGrowItemCount(combined, growItemIndex)
 		end
 		if next(growList) then
             for _,entry in pairs(growList) do
                 plantSeed(seedStorage, planter, entry.seed)
             end
-            updateGrowItemCount(combined, growItemIndex)
 		end
         sleep(1)
     end

@@ -182,7 +182,7 @@ function drawGrowItem(cGrowList, growItemIndex)
 end
 
 function drawEmptyGrowItem()
-    local y = 10
+    local y = 9
     local x = 41
     -- Clear current grow item
     for i=y,y+6 do
@@ -191,22 +191,10 @@ function drawEmptyGrowItem()
     end
 end
 
-function updateGrowItemCount(cGrowList, growItemIndex)
-    local x = 41
-    local y = 12
-    local entry = cGrowList[growItemIndex]
-    screen.setCursorPos(x,y)
-    screen.write("|Count:"..strings.ensure_width((entry.count..""), 13).."|")
-    screen.setCursorPos(x,y+1)
-    local grown = (entry.count / entry.threshold) * 100
-    screen.write("|Grown:"..strings.ensure_width(grown.."%", 13).."|")
-end
-
 return {
     resetScreen,
     printItemSection,
     drawDelta,
     drawGrowItem,
-    updateGrowItemCount,
     drawEmptyGrowItem
 }
